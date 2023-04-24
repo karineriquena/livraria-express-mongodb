@@ -1,5 +1,6 @@
 import express from 'express';
 import db from './config/dbConnect.js';
+import books from './models/Book.js';
 
 db.on('error', console.log.bind(console, 'DB Connection Error!'));
 db.once('open', () => console.log('DB Connection Successful!'));
@@ -8,17 +9,17 @@ const app = express();
 
 app.use(express.json());
 
-const books = [
-  { id: 1, title: 'The Elder Ring' },
-  { id: 2, title: "Harry Potter and the Sorcerer's Stone" },
-];
-
 app.get('/', (_, res) => {
   res.status(200).send('Node course');
 });
 
-app.get('/books', (_, res) => {
-  res.status(200).json(books);
+app.get('/books', async (_, res) => {
+  try {
+    const items = await books.find({});
+    res.status(200).json(items);
+  } catch (err) {
+    res.status(500).send('error', err);
+  }
 });
 
 app.get('/books/:id', (req, res) => {
